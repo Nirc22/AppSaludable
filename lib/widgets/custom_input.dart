@@ -21,7 +21,13 @@ class CustomInput extends StatefulWidget {
 }
 
 class _CustomInputState extends State<CustomInput> {
-  bool hiddenValue = false;
+  late bool hiddenValue;
+
+  @override
+  void initState() {
+    hiddenValue = widget.isPassword ? true : false;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

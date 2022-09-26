@@ -17,7 +17,9 @@ class Labels extends StatelessWidget {
                     TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, "register");
+                },
                 child: const Text(
                   "Crea una ahora",
                   style: TextStyle(fontWeight: FontWeight.bold),
