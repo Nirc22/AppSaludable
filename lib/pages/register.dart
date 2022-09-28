@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:healthy_app/widgets/custom_button.dart';
+import 'package:healthy_app/widgets/labels.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -7,14 +9,21 @@ class RegisterPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Container(
-          child: Column(
-            children: [
-              _LabelRegistro(),
-              Expanded(
-                child: Formularios(),
-              ),
-            ],
+        child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _LabelRegistro(),
+                Formulario(),
+                Labels(
+                  ruta: "login",
+                  texto: "¿Ya tienes una cuenta?",
+                  subtexto: "Inicia sesión",
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -22,133 +31,88 @@ class RegisterPage extends StatelessWidget {
   }
 }
 
-class Formularios extends StatefulWidget {
-  const Formularios({
-    Key? key,
-  }) : super(key: key);
-
+class Formulario extends StatefulWidget {
   @override
-  State<Formularios> createState() => _FormulariosState();
+  State<Formulario> createState() => _FormularioState();
 }
 
-class _FormulariosState extends State<Formularios> {
+class _FormularioState extends State<Formulario> {
   final nombresCtrl = TextEditingController();
   final apellidosCtrl = TextEditingController();
-  int _currentStep = 0;
+  final correoCtrl = TextEditingController();
+  final passCtrl = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    return Stepper(
-      type: StepperType.vertical,
-      onStepTapped: (value) {
-        _currentStep = value;
-        setState(() {});
-      },
-      onStepCancel: () {
-        if (_currentStep == 0) {
-          Navigator.pushNamed(context, "login");
-        } else if (_currentStep >= 1) {
-          _currentStep--;
-          setState(() {});
-        }
-      },
-      onStepContinue: () {
-        if (_currentStep < 2) {
-          _currentStep++;
-          setState(() {});
-        }
-      },
-      currentStep: _currentStep,
-      steps: [
-        Step(
-          title: const Text(
-            "Datos Personales",
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Column(
+        children: [
+          _CustomInputForm(
+            textController: nombresCtrl,
+            texto: "Nombre(s):",
           ),
-          isActive: _currentStep >= 0,
-          state: _currentStep > 0 ? StepState.complete : StepState.indexed,
-          content: Column(
-            children: [
-              CustomStepperInput(
-                label: "Nombre(s):",
-                textController: nombresCtrl,
-              ),
-              CustomStepperInput(
-                label: "Apellido(s):",
-                textController: nombresCtrl,
-              ),
-              DropdownButton(
-                items: [
-                  DropdownMenuItem(
-                    child: Text("Masculino"),
-                    value: "Masculino",
-                  ),
-                  DropdownMenuItem(
-                    child: Text("Femenino"),
-                    value: "Femenino",
-                  ),
-                ],
-                onChanged: (String? value) {
-                  print(value);
-                },
-              )
-            ],
+          _CustomInputForm(
+            textController: apellidosCtrl,
+            texto: "Apellido(s):",
           ),
-        ),
-        Step(
-          title: const Text(
-            "Antecedentes Familiares",
+          _CustomInputForm(
+            textController: correoCtrl,
+            texto: "Correo:",
           ),
-          isActive: _currentStep >= 1,
-          state: _currentStep > 1 ? StepState.complete : StepState.indexed,
-          content: Container(),
-        ),
-        Step(
-          title: const Text(
-            "Antecedentes Personales",
+          _CustomInputForm(
+            textController: passCtrl,
+            texto: "Clave:",
           ),
-          isActive: _currentStep >= 2,
-          state: _currentStep > 2 ? StepState.complete : StepState.indexed,
-          content: Container(),
-        ),
-      ],
+          CustomButton(
+            texto: "Registrarse",
+            onPressed: () {
+              print(nombresCtrl.text);
+              print(apellidosCtrl.text);
+              print(correoCtrl.text);
+              print(passCtrl.text);
+            },
+          ),
+        ],
+      ),
     );
   }
 }
 
-class CustomStepperInput extends StatelessWidget {
-  final String label;
+class _CustomInputForm extends StatelessWidget {
+  final String texto;
   final TextEditingController textController;
   final TextInputType keyboardType;
 
-  const CustomStepperInput({
+  const _CustomInputForm({
     Key? key,
-    required this.label,
-    required this.textController,
+    required this.texto,
     this.keyboardType = TextInputType.text,
+    required this.textController,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
+      padding: EdgeInsets.only(bottom: 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            texto,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          const SizedBox(
-            height: 10,
-          ),
+          SizedBox(height: 10),
           TextField(
             controller: textController,
             keyboardType: keyboardType,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               contentPadding:
                   EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-              border: OutlineInputBorder(
-                borderSide: BorderSide(width: 1),
-              ),
+              border: OutlineInputBorder(),
             ),
           ),
         ],
