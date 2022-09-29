@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:healthy_app/helpers/mostrar_alerta.dart';
+import 'package:healthy_app/services/auth_services.dart';
 
 import 'package:healthy_app/widgets/logo.dart';
 import 'package:healthy_app/widgets/labels.dart';
 import 'package:healthy_app/widgets/custom_button.dart';
 import 'package:healthy_app/widgets/custom_input.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -51,6 +54,8 @@ class _FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+    final authServices = Provider.of<AuthServices>(context);
+
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -71,10 +76,19 @@ class _FormState extends State<_Form> {
           ),
           CustomButton(
             texto: "Ingresar",
-            onPressed: () {
-              print(emailCtrl.text);
-              print(passCtrl.text);
-            },
+            onPressed: authServices.autenticando
+                ? null
+                : () async {
+                    FocusScope.of(context).unfocus();
+                    final loginOk = await authServices.login(
+                        emailCtrl.text.trim(), passCtrl.text.trim());
+                    if (loginOk["ok"]) {
+                      Navigator.pushReplacementNamed(context, "home");
+                    } else {
+                      mostrarAlerta(
+                          context, "Login incorrecto", loginOk["msg"]);
+                    }
+                  },
           )
         ],
       ),

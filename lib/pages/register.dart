@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:healthy_app/helpers/mostrar_alerta.dart';
+import 'package:healthy_app/services/auth_services.dart';
+
+import 'package:healthy_app/widgets/custom_input_form.dart';
 import 'package:healthy_app/widgets/custom_button.dart';
 import 'package:healthy_app/widgets/labels.dart';
+import 'package:provider/provider.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -12,6 +17,7 @@ class RegisterPage extends StatelessWidget {
         child: SingleChildScrollView(
           physics: BouncingScrollPhysics(),
           child: Container(
+            height: MediaQuery.of(context).size.height * 0.9,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -44,76 +50,47 @@ class _FormularioState extends State<Formulario> {
 
   @override
   Widget build(BuildContext context) {
+    final authServices = Provider.of<AuthServices>(context);
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Column(
         children: [
-          _CustomInputForm(
+          CustomInputForm(
             textController: nombresCtrl,
             texto: "Nombre(s):",
           ),
-          _CustomInputForm(
+          CustomInputForm(
             textController: apellidosCtrl,
             texto: "Apellido(s):",
           ),
-          _CustomInputForm(
+          CustomInputForm(
             textController: correoCtrl,
             texto: "Correo:",
           ),
-          _CustomInputForm(
+          CustomInputForm(
             textController: passCtrl,
             texto: "Clave:",
           ),
+          SizedBox(height: 20),
           CustomButton(
             texto: "Registrarse",
-            onPressed: () {
-              print(nombresCtrl.text);
-              print(apellidosCtrl.text);
-              print(correoCtrl.text);
-              print(passCtrl.text);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _CustomInputForm extends StatelessWidget {
-  final String texto;
-  final TextEditingController textController;
-  final TextInputType keyboardType;
-
-  const _CustomInputForm({
-    Key? key,
-    required this.texto,
-    this.keyboardType = TextInputType.text,
-    required this.textController,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(bottom: 15),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            texto,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 10),
-          TextField(
-            controller: textController,
-            keyboardType: keyboardType,
-            decoration: InputDecoration(
-              contentPadding:
-                  EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-              border: OutlineInputBorder(),
-            ),
+            onPressed: authServices.autenticando
+                ? null
+                : () async {
+                    FocusScope.of(context).unfocus();
+                    final registroOk = await authServices.register(
+                        nombresCtrl.text.trim(),
+                        apellidosCtrl.text.trim(),
+                        correoCtrl.text.trim(),
+                        passCtrl.text.trim());
+                    if (registroOk["ok"]) {
+                      Navigator.pushReplacementNamed(context, "login");
+                    } else {
+                      mostrarAlerta(
+                          context, "Registro incorrecto", registroOk["msg"]);
+                    }
+                  },
           ),
         ],
       ),
