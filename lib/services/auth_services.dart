@@ -3,28 +3,31 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:healthy_app/global/environments.dart';
 import 'package:healthy_app/models/login_response.dart';
+import 'package:healthy_app/models/usuario.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthServices with ChangeNotifier {
-  late LoginResponse loginResponse;
+  late Usuario usuario;
+
   bool _autenticando = false;
   bool get autenticando => _autenticando;
-  final _storage = FlutterSecureStorage();
 
   set autenticando(bool value) {
     _autenticando = value;
     notifyListeners();
   }
 
+  final _storage = FlutterSecureStorage();
+
   static Future<String?> getToken() async {
-    final _storage = new FlutterSecureStorage();
+    final _storage = FlutterSecureStorage();
     final token = await _storage.read(key: "token");
     return token;
   }
 
   static Future<void> deleteToken() async {
-    final _storage = new FlutterSecureStorage();
+    final _storage = FlutterSecureStorage();
     await _storage.delete(key: "token");
   }
 
@@ -43,10 +46,10 @@ class AuthServices with ChangeNotifier {
     autenticando = false;
 
     if (resp.statusCode == 200) {
-      loginResponse = loginResponseFromJson(resp.body);
+      final loginResponse = loginResponseFromJson(resp.body);
+      usuario = loginResponse.usuario;
       await _guardarToken(loginResponse.token);
-      Map<String, dynamic> json = jsonDecode(resp.body);
-      return {"ok": json["ok"], "msg": json["msg"]};
+      return {"ok": true, "msg": "Ingreso Exitoso"};
     } else {
       return {"ok": false, "msg": "Revise sus credenciales"};
     }
@@ -69,19 +72,18 @@ class AuthServices with ChangeNotifier {
         body: jsonEncode(data), headers: {"Content-Type": "application/json"});
 
     print(resp.body);
+
     autenticando = false;
     if (resp.statusCode == 200) {
-      Map<String, dynamic> json = jsonDecode(resp.body);
-      return {"ok": json["ok"], "msg": json["msg"]};
+      final loginResponse = loginResponseFromJson(resp.body);
+      usuario = loginResponse.usuario;
+      await _guardarToken(loginResponse.token);
+      return {"ok": true, "msg": "Registro Exitoso"};
     } else {
-      if (resp.statusCode == 201) {
-        Map<String, dynamic> json = jsonDecode(resp.body);
-        final error = json["errors"].keys.first;
-        final msgError = json["errors"][error]["msg"];
-        return {"ok": false, "msg": msgError};
-      } else {
-        return {"ok": false, "msg": "Ha surgido un error inesperado"};
-      }
+      return {
+        "ok": false,
+        "msg": "Revise la información ingresada en el formulario"
+      };
     }
   }
 
@@ -89,13 +91,29 @@ class AuthServices with ChangeNotifier {
     return await _storage.write(key: "token", value: token);
   }
 
-  Future _logout() async {
+  Future logout() async {
     return await _storage.delete(key: "token");
   }
 
-  Future isLoggedIn() async {
-    final token = _storage.read(key: "token");
-    print(token);
+  Future<bool> isLoggedIn() async {
+    final token = await _storage.read(key: "token");
+
+    final url = Uri.parse("${Enviroments.apiUrl}/usuario/renew");
+
+    final resp = await http.get(url, headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $token"
+    });
+
+    if (resp.statusCode == 200) {
+      final loginResponse = loginResponseFromJson(resp.body);
+      usuario = loginResponse.usuario;
+      await _guardarToken(loginResponse.token);
+      return true;
+    } else {
+      logout();
+      return false;
+    }
   }
 
   String allWordsCapitilize(String str) {

@@ -14,12 +14,12 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (context) => AuthServices(),
-        )
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Healthy App',
-        initialRoute: "login",
+        initialRoute: "loading",
         routes: appRoutes,
       ),
     );

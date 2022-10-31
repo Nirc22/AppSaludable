@@ -85,7 +85,16 @@ class _FormularioState extends State<Formulario> {
                         correoCtrl.text.trim(),
                         passCtrl.text.trim());
                     if (registroOk["ok"]) {
-                      Navigator.pushReplacementNamed(context, "login");
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(
+                            SnackBar(
+                              backgroundColor: Colors.green,
+                              content: Text(registroOk["msg"]),
+                            ),
+                          )
+                          .closed
+                          .then((_) => Navigator.pushReplacementNamed(
+                              context, "loading"));
                     } else {
                       mostrarAlerta(
                           context, "Registro incorrecto", registroOk["msg"]);
