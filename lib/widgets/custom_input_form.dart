@@ -4,11 +4,13 @@ class CustomInputForm extends StatelessWidget {
   final String texto;
   final TextEditingController textController;
   final TextInputType keyboardType;
+  final bool isActive;
 
   const CustomInputForm({
     Key? key,
     required this.texto,
     this.keyboardType = TextInputType.text,
+    this.isActive = true,
     required this.textController,
   }) : super(key: key);
 
@@ -28,6 +30,7 @@ class CustomInputForm extends StatelessWidget {
           ),
           SizedBox(height: 10),
           TextField(
+            enabled: isActive,
             controller: textController,
             keyboardType: keyboardType,
             decoration: InputDecoration(

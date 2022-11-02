@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:healthy_app/pages/details.dart';
 import 'package:healthy_app/pages/home.dart';
 import 'package:healthy_app/pages/profile.dart';
 import 'package:healthy_app/services/auth_services.dart';
@@ -23,6 +24,7 @@ class _Paginas extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final navegacionModel = Provider.of<_NavegacionModel>(context);
+    final usuario = Provider.of<AuthServices>(context).usuario;
 
     return PageView(
       controller: navegacionModel.pageController,
@@ -30,6 +32,9 @@ class _Paginas extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       children: [
         HomePage(),
+        if (usuario.rol.nombre == "Usuario") ...[
+          DetailsPage(),
+        ],
         ProfilePage(),
       ],
     );
