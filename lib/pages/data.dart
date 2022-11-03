@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:healthy_app/services/fecha_services.dart';
+import 'package:healthy_app/services/pais_services.dart';
 import 'package:healthy_app/widgets/center_text.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +23,7 @@ class DataPage extends StatelessWidget {
               const SizedBox(height: 20),
               Expanded(
                 child: Stepper(
+                  onStepCancel: () => Navigator.pop(context),
                   steps: [
                     Step(
                       title: const Text("Datos Personales"),
@@ -39,7 +41,7 @@ class DataPage extends StatelessWidget {
                                   _CalculatedData(
                                     texto: fechaServices.edad.toString(),
                                   ),
-                                  Container(),
+                                  _PaisOrigen(),
                                 ],
                               ),
                             ),
@@ -53,6 +55,50 @@ class DataPage extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _PaisOrigen extends StatelessWidget {
+  const _PaisOrigen({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final paisServices = Provider.of<PaisServices>(context);
+    final paises = paisServices.paises;
+
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "País de origen:",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 5),
+          DropdownButton(
+            value: paisServices.paisOrigen,
+            items: paises
+                .map(
+                  (item) => DropdownMenuItem(
+                    value: item.id,
+                    child: Text(item.nombre),
+                  ),
+                )
+                .toList(),
+            onChanged: (String? value) {
+              if (value != null && paisServices.paisOrigen != value) {
+                paisServices.paisOrigen = value;
+              }
+            },
+          ),
+        ],
       ),
     );
   }

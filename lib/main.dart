@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:healthy_app/routes/routes.dart';
 import 'package:healthy_app/services/auth_services.dart';
 import 'package:healthy_app/services/fecha_services.dart';
+import 'package:healthy_app/services/pais_services.dart';
 import 'package:provider/provider.dart';
 
 void main() => runApp(const MyApp());
@@ -18,6 +19,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => FechaServices(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => PaisServices(),
         ),
       ],
       child: MaterialApp(
