@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:healthy_app/routes/routes.dart';
 import 'package:healthy_app/services/auth_services.dart';
-import 'package:healthy_app/services/fecha_services.dart';
+import 'package:healthy_app/services/data_services.dart';
 import 'package:healthy_app/services/pais_services.dart';
 import 'package:provider/provider.dart';
 
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
           create: (context) => AuthServices(),
         ),
         ChangeNotifierProvider(
-          create: (_) => FechaServices(),
+          create: (_) => DataServices(),
         ),
         ChangeNotifierProvider(
           create: (_) => PaisServices(),

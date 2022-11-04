@@ -9,17 +9,9 @@ import 'package:healthy_app/global/environments.dart';
 
 class PaisServices with ChangeNotifier {
   List<Pais> paises = [];
-  String? _paisOrigen = "632a875828c688f4b785e95a";
-  String? _paisResidencia = "632a875828c688f4b785e95a";
 
   PaisServices() {
     getPaises();
-  }
-
-  String? get paisOrigen => _paisOrigen;
-  set paisOrigen(String? value) {
-    _paisOrigen = value;
-    notifyListeners();
   }
 
   getPaises() async {

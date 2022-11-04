@@ -1,31 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:healthy_app/services/fecha_services.dart';
-import 'package:healthy_app/services/pais_services.dart';
-import 'package:healthy_app/widgets/center_text.dart';
-import 'package:intl/intl.dart';
+import 'package:healthy_app/widgets/custom_input_form.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
-class DataPage extends StatelessWidget {
-  DataPage({super.key});
+import 'package:healthy_app/widgets/center_text.dart';
+import 'package:healthy_app/services/data_services.dart';
+import 'package:healthy_app/services/pais_services.dart';
+
+class DataPage extends StatefulWidget {
+  const DataPage({super.key});
+
+  @override
+  State<DataPage> createState() => _DataPageState();
+}
+
+class _DataPageState extends State<DataPage> {
+  TextEditingController pesoCtrl = TextEditingController();
+  TextEditingController alturaCtrl = TextEditingController();
+  int pasoActual = 0;
 
   @override
   Widget build(BuildContext context) {
-    final fechaServices = Provider.of<FechaServices>(context);
+    final dataServices = Provider.of<DataServices>(context);
+    pesoCtrl.text = "0";
+    alturaCtrl.text = "0";
 
     return SafeArea(
       child: Scaffold(
         body: Container(
           width: double.infinity,
-          padding: EdgeInsets.symmetric(vertical: 15),
+          padding: const EdgeInsets.symmetric(vertical: 15),
           child: Column(
             children: [
               const CenterText(texto: "Completa la información"),
               const SizedBox(height: 20),
               Expanded(
                 child: Stepper(
+                  physics: const ScrollPhysics(),
+                  currentStep: pasoActual,
                   onStepCancel: () => Navigator.pop(context),
+                  onStepTapped: (paso) => tapped(paso),
+                  onStepContinue: continued,
                   steps: [
                     Step(
+                      state: pasoActual > 0
+                          ? StepState.complete
+                          : StepState.indexed,
+                      isActive: pasoActual >= 0,
                       title: const Text("Datos Personales"),
                       content: Container(
                         width: double.infinity,
@@ -37,14 +58,62 @@ class DataPage extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  _FechaNacimiento(),
-                                  _CalculatedData(
-                                    texto: fechaServices.edad.toString(),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      _FechaNacimiento(),
+                                      _CalculatedData(
+                                        texto: dataServices.edad.toString(),
+                                      ),
+                                    ],
                                   ),
-                                  _PaisOrigen(),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      _PaisOrigen(),
+                                      SizedBox(width: 20),
+                                      _PaisResidencia(),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Flexible(
+                                        child: CustomInputForm(
+                                          texto: "Peso (Kg):",
+                                          textController: pesoCtrl,
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      Flexible(
+                                        child: CustomInputForm(
+                                          texto: "Altura (cm):",
+                                          textController: pesoCtrl,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  _Sexo()
                                 ],
                               ),
                             ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Step(
+                      state: pasoActual > 1
+                          ? StepState.complete
+                          : StepState.indexed,
+                      isActive: pasoActual >= 1,
+                      title: Text("Antecedentes Familiares"),
+                      content: Container(
+                        width: double.infinity,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _AntecedentesFamiliares(),
                           ],
                         ),
                       ),
@@ -58,32 +127,156 @@ class DataPage extends StatelessWidget {
       ),
     );
   }
+
+  tapped(int step) {
+    setState(() {
+      pasoActual = step;
+    });
+  }
+
+  continued() {
+    if (pasoActual < 3) {
+      setState(() {
+        pasoActual += 1;
+      });
+    }
+  }
+
+  cancel() {
+    if (pasoActual == 0) {
+      Navigator.pop(context);
+    } else if (pasoActual > 0) {
+      setState(() {
+        pasoActual -= 1;
+      });
+    }
+  }
 }
 
-class _PaisOrigen extends StatelessWidget {
-  const _PaisOrigen({
+class _AntecedentesFamiliares extends StatefulWidget {
+  _AntecedentesFamiliares({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<_AntecedentesFamiliares> createState() =>
+      _AntecedentesFamiliaresState();
+}
+
+class _AntecedentesFamiliaresState extends State<_AntecedentesFamiliares> {
+  List<String> cursos = ["Flutter", "PHP", "Dart", "Python"];
+  List<bool> isChecked = [];
+  List<int> indices = [];
+  List<String> resultado = [];
+
+  @override
+  void initState() {
+    isChecked = List<bool>.filled(cursos.length, false);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: [
+          for (var i in resultado) ...[
+            Text(i),
+          ],
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: cursos.length,
+            itemBuilder: (context, index) {
+              return CheckboxListTile(
+                title: Text(cursos[index]),
+                value: isChecked[index],
+                onChanged: (value) {
+                  setState(() {
+                    isChecked[index] = value as bool;
+                    if (isChecked[index]) {
+                      resultado.add(cursos[index]);
+                    } else {
+                      resultado.remove(cursos[index]);
+                    }
+                  });
+                },
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Sexo extends StatelessWidget {
+  const _Sexo({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final paisServices = Provider.of<PaisServices>(context);
-    final paises = paisServices.paises;
+    final dataServices = Provider.of<DataServices>(context);
+    final List<String> sexo = ["Masculino", "Femenino"];
 
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "País de origen:",
+          const Text(
+            "Sexo:",
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           DropdownButton(
-            value: paisServices.paisOrigen,
+            value: dataServices.sexo,
+            items: sexo
+                .map(
+                  (item) => DropdownMenuItem(
+                    value: item,
+                    child: Text(item),
+                  ),
+                )
+                .toList(),
+            onChanged: (String? value) {
+              if (value != null && dataServices.sexo != value) {
+                dataServices.sexo = value;
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PaisResidencia extends StatelessWidget {
+  const _PaisResidencia({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final paises = Provider.of<PaisServices>(context).paises;
+    final dataServices = Provider.of<DataServices>(context);
+
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "País de residencia:",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 5),
+          DropdownButton(
+            value: dataServices.paisResidencia,
             items: paises
                 .map(
                   (item) => DropdownMenuItem(
@@ -93,8 +286,52 @@ class _PaisOrigen extends StatelessWidget {
                 )
                 .toList(),
             onChanged: (String? value) {
-              if (value != null && paisServices.paisOrigen != value) {
-                paisServices.paisOrigen = value;
+              if (value != null && dataServices.paisResidencia != value) {
+                dataServices.paisResidencia = value;
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PaisOrigen extends StatelessWidget {
+  const _PaisOrigen({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final paises = Provider.of<PaisServices>(context).paises;
+    final dataServices = Provider.of<DataServices>(context);
+
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "País de origen:",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 5),
+          DropdownButton(
+            value: dataServices.paisOrigen,
+            items: paises
+                .map(
+                  (item) => DropdownMenuItem(
+                    value: item.id,
+                    child: Text(item.nombre),
+                  ),
+                )
+                .toList(),
+            onChanged: (String? value) {
+              if (value != null && dataServices.paisOrigen != value) {
+                dataServices.paisOrigen = value;
               }
             },
           ),
@@ -112,17 +349,18 @@ class _FechaNacimiento extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             "Fecha de Nacimiento:",
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
+          const SizedBox(height: 5),
           DatePicker(),
         ],
       ),
@@ -141,19 +379,19 @@ class _CalculatedData extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 10),
       child: Column(
         children: [
-          Text(
+          const Text(
             "Edad:",
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 10),
           Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey, width: 2),
               color: Colors.grey[300],
@@ -173,28 +411,28 @@ class _CalculatedData extends StatelessWidget {
 class DatePicker extends StatelessWidget {
   DatePicker({super.key});
 
-  DateTime initialDate = DateTime(
+  final DateTime initialDate = DateTime(
       DateTime.now().year - 18, DateTime.now().month, DateTime.now().day);
 
-  DateTime lastDate = DateTime(
+  final DateTime lastDate = DateTime(
       DateTime.now().year - 18, DateTime.now().month, DateTime.now().day);
 
-  DateTime firstDate = DateTime(DateTime.now().year - 80);
+  final DateTime firstDate = DateTime(DateTime.now().year - 80);
 
   @override
   Widget build(BuildContext context) {
-    final fechaServices = Provider.of<FechaServices>(context);
+    final dataServices = Provider.of<DataServices>(context);
 
     return ElevatedButton(
-      child: fechaServices.seleccionado
-          ? Text(DateFormat("dd/MM/yyyy").format(fechaServices.fechaNacimiento))
+      child: dataServices.fechaNacimientoSeleccionada
+          ? Text(DateFormat("dd/MM/yyyy").format(dataServices.fechaNacimiento))
           : const Text("Seleccionar fecha"),
       onPressed: () => selectDate(context),
     );
   }
 
   void selectDate(BuildContext context) async {
-    final fechaServices = Provider.of<FechaServices>(context, listen: false);
+    final dataServices = Provider.of<DataServices>(context, listen: false);
 
     DateTime? dateTime = await showDatePicker(
       context: context,
@@ -204,11 +442,11 @@ class DatePicker extends StatelessWidget {
     );
 
     if (dateTime != null) {
-      fechaServices.fechaNacimiento = dateTime;
-      fechaServices.seleccionado = true;
-      if (fechaServices.seleccionado) {
-        fechaServices.edad =
-            DateTime.now().year - fechaServices.fechaNacimiento.year;
+      dataServices.fechaNacimiento = dateTime;
+      dataServices.fechaNacimientoSeleccionada = true;
+      if (dataServices.fechaNacimientoSeleccionada) {
+        dataServices.edad =
+            DateTime.now().year - dataServices.fechaNacimiento.year;
       }
     }
   }
