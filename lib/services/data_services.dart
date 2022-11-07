@@ -47,4 +47,6 @@ class DataServices with ChangeNotifier {
     _sexo = value;
     notifyListeners();
   }
+
+  List<Map<String, String>> antecedentesFamiliares = [];
 }

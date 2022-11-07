@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:healthy_app/models/parametro.dart';
+import 'package:healthy_app/services/parametro_services.dart';
 import 'package:healthy_app/widgets/custom_input_form.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -20,10 +22,15 @@ class _DataPageState extends State<DataPage> {
   int pasoActual = 0;
 
   @override
-  Widget build(BuildContext context) {
-    final dataServices = Provider.of<DataServices>(context);
+  void initState() {
     pesoCtrl.text = "0";
     alturaCtrl.text = "0";
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final dataServices = Provider.of<DataServices>(context);
 
     return SafeArea(
       child: Scaffold(
@@ -38,7 +45,7 @@ class _DataPageState extends State<DataPage> {
                 child: Stepper(
                   physics: const ScrollPhysics(),
                   currentStep: pasoActual,
-                  onStepCancel: () => Navigator.pop(context),
+                  onStepCancel: cancel,
                   onStepTapped: (paso) => tapped(paso),
                   onStepContinue: continued,
                   steps: [
@@ -83,13 +90,15 @@ class _DataPageState extends State<DataPage> {
                                         child: CustomInputForm(
                                           texto: "Peso (Kg):",
                                           textController: pesoCtrl,
+                                          keyboardType: TextInputType.number,
                                         ),
                                       ),
                                       Spacer(),
                                       Flexible(
                                         child: CustomInputForm(
                                           texto: "Altura (cm):",
-                                          textController: pesoCtrl,
+                                          textController: alturaCtrl,
+                                          keyboardType: TextInputType.number,
                                         ),
                                       ),
                                     ],
@@ -135,10 +144,24 @@ class _DataPageState extends State<DataPage> {
   }
 
   continued() {
-    if (pasoActual < 3) {
+    if (pasoActual < 1) {
       setState(() {
         pasoActual += 1;
       });
+    } else if (pasoActual == 1) {
+      final datos = Provider.of<DataServices>(context, listen: false);
+      print("Datos:  ");
+      print(datos.fechaNacimiento);
+      print(datos.edad);
+      print(datos.paisOrigen);
+      print(datos.paisResidencia);
+      print(pesoCtrl.text);
+      print(alturaCtrl.text);
+      print(datos.sexo);
+      print(datos.antecedentesFamiliares);
+
+      double imc = int.parse(alturaCtrl.text) / int.parse(pesoCtrl.text);
+      print(imc);
     }
   }
 
@@ -154,7 +177,7 @@ class _DataPageState extends State<DataPage> {
 }
 
 class _AntecedentesFamiliares extends StatefulWidget {
-  _AntecedentesFamiliares({
+  const _AntecedentesFamiliares({
     Key? key,
   }) : super(key: key);
 
@@ -164,39 +187,43 @@ class _AntecedentesFamiliares extends StatefulWidget {
 }
 
 class _AntecedentesFamiliaresState extends State<_AntecedentesFamiliares> {
-  List<String> cursos = ["Flutter", "PHP", "Dart", "Python"];
-  List<bool> isChecked = [];
-  List<int> indices = [];
   List<String> resultado = [];
 
   @override
   void initState() {
-    isChecked = List<bool>.filled(cursos.length, false);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final parametroServices = Provider.of<ParametroServices>(context);
+    final dataServices = Provider.of<DataServices>(context);
+
     return Container(
       child: Column(
         children: [
-          for (var i in resultado) ...[
-            Text(i),
+          for (var i in dataServices.antecedentesFamiliares) ...[
+            Text(i["enfermedad"] as String),
           ],
           ListView.builder(
             shrinkWrap: true,
-            itemCount: cursos.length,
+            itemCount: parametroServices.enfermedades.length,
             itemBuilder: (context, index) {
               return CheckboxListTile(
-                title: Text(cursos[index]),
-                value: isChecked[index],
+                title: Text(parametroServices.enfermedades[index].nombre),
+                value: parametroServices.isCheckedEnfermedades[index],
                 onChanged: (value) {
                   setState(() {
-                    isChecked[index] = value as bool;
-                    if (isChecked[index]) {
-                      resultado.add(cursos[index]);
+                    parametroServices.changeIsCheckedEnfermedades(
+                        index, value as bool);
+                    if (parametroServices.isCheckedEnfermedades[index]) {
+                      dataServices.antecedentesFamiliares.add({
+                        "enfermedad": parametroServices.enfermedades[index].id
+                      });
                     } else {
-                      resultado.remove(cursos[index]);
+                      dataServices.antecedentesFamiliares.removeWhere((i) =>
+                          i["enfermedad"] ==
+                          parametroServices.enfermedades[index].id);
                     }
                   });
                 },

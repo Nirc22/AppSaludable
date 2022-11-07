@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:healthy_app/routes/routes.dart';
 import 'package:healthy_app/services/auth_services.dart';
 import 'package:healthy_app/services/data_services.dart';
 import 'package:healthy_app/services/pais_services.dart';
-import 'package:provider/provider.dart';
+import 'package:healthy_app/services/parametro_services.dart';
 
 void main() => runApp(const MyApp());
 
@@ -22,6 +24,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => PaisServices(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ParametroServices(),
         ),
       ],
       child: MaterialApp(
