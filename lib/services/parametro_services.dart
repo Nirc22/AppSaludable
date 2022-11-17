@@ -7,10 +7,13 @@ import 'package:healthy_app/models/parametro.dart';
 
 class ParametroServices with ChangeNotifier {
   List<Parametro> enfermedades = [];
+  List<Parametro> habitos = [];
+  List<bool> isCheckedAntecedentes = [];
   List<bool> isCheckedEnfermedades = [];
 
   ParametroServices() {
     getEnfermedades();
+    getHabitos();
   }
 
   changeIsCheckedEnfermedades(int index, bool value) {
@@ -18,9 +21,8 @@ class ParametroServices with ChangeNotifier {
     notifyListeners();
   }
 
-  resetearIsCheckedEnfermedades() {
-    isCheckedEnfermedades =
-        List<bool>.filled(enfermedades.length, false, growable: false);
+  changeIsCheckedAntecedentes(int index, bool value) {
+    isCheckedAntecedentes[index] = value;
     notifyListeners();
   }
 
@@ -33,8 +35,22 @@ class ParametroServices with ChangeNotifier {
 
     final parametroResponse = parametroResponseFromJson(resp.body);
     enfermedades = parametroResponse.parametros;
+    isCheckedAntecedentes =
+        List<bool>.filled(enfermedades.length, false, growable: false);
     isCheckedEnfermedades =
         List<bool>.filled(enfermedades.length, false, growable: false);
+    notifyListeners();
+  }
+
+  getHabitos() async {
+    final url = Uri.parse(
+        "${Enviroments.apiUrl}/parametro/tipo/632e67d77bab36dbf8f79e4c");
+
+    final resp =
+        await http.get(url, headers: {"Content-Type": "application/json"});
+
+    final parametroResponse = parametroResponseFromJson(resp.body);
+    habitos = parametroResponse.parametros;
     notifyListeners();
   }
 }

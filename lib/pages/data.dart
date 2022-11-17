@@ -116,13 +116,43 @@ class _DataPageState extends State<DataPage> {
                           ? StepState.complete
                           : StepState.indexed,
                       isActive: pasoActual >= 1,
-                      title: Text("Antecedentes Familiares"),
+                      title: const Text("Antecedentes Familiares"),
                       content: Container(
                         width: double.infinity,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _AntecedentesFamiliares(),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Step(
+                      state: pasoActual > 2
+                          ? StepState.complete
+                          : StepState.indexed,
+                      isActive: pasoActual >= 2,
+                      title: const Text("Enfermedades Usuario"),
+                      content: Container(
+                        width: double.infinity,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _EnfermedadesUsuario(),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Step(
+                      title: const Text("Habitos de vida"),
+                      content: Container(
+                        width: double.infinity,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                                "Con qué frecuencia realiza las siguientes actividades:"),
+                            _Habitos(),
                           ],
                         ),
                       ),
@@ -176,6 +206,148 @@ class _DataPageState extends State<DataPage> {
   }
 }
 
+class _Habitos extends StatelessWidget {
+  const _Habitos({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final habitosServices = Provider.of<ParametroServices>(context);
+    final habitos = habitosServices.habitos;
+
+    return ListView.builder(
+      physics: const ScrollPhysics(),
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      itemCount: habitos.length,
+      itemBuilder: (context, index) => _HabitoRadio(
+        habito: habitos[index].nombre,
+      ),
+    );
+  }
+}
+
+class _HabitoRadio extends StatefulWidget {
+  final String habito;
+  const _HabitoRadio({
+    Key? key,
+    required this.habito,
+  }) : super(key: key);
+
+  @override
+  State<_HabitoRadio> createState() => _HabitoRadioState();
+}
+
+class _HabitoRadioState extends State<_HabitoRadio> {
+  int? currentValue = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "${widget.habito}: ",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          RadioListTile(
+            title: Text("Nunca"),
+            value: 0,
+            groupValue: currentValue,
+            onChanged: (int? value) {
+              changeValue(value);
+            },
+          ),
+          RadioListTile(
+            title: Text("Algunas veces"),
+            value: 1,
+            groupValue: currentValue,
+            onChanged: (int? value) {
+              changeValue(value);
+            },
+          ),
+          RadioListTile(
+            title: Text("Frecuentemente"),
+            value: 2,
+            groupValue: currentValue,
+            onChanged: (int? value) {
+              changeValue(value);
+            },
+          ),
+          RadioListTile(
+            title: Text("Diariamente"),
+            value: 3,
+            groupValue: currentValue,
+            onChanged: (int? value) {
+              changeValue(value);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  changeValue(int? value) {
+    setState(() {
+      currentValue = value;
+    });
+  }
+}
+
+class _EnfermedadesUsuario extends StatefulWidget {
+  const _EnfermedadesUsuario({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<_EnfermedadesUsuario> createState() => _EnfermedadesUsuarioState();
+}
+
+class _EnfermedadesUsuarioState extends State<_EnfermedadesUsuario> {
+  @override
+  Widget build(BuildContext context) {
+    final parametroServices = Provider.of<ParametroServices>(context);
+    final dataServices = Provider.of<DataServices>(context);
+
+    return Container(
+      child: Column(
+        children: [
+          for (var i in dataServices.enfermedadesUsuario) ...[
+            Text(i["enfermedad"] as String),
+          ],
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: parametroServices.enfermedades.length,
+            itemBuilder: (context, index) {
+              return CheckboxListTile(
+                title: Text(parametroServices.enfermedades[index].nombre),
+                value: parametroServices.isCheckedEnfermedades[index],
+                onChanged: (value) {
+                  setState(() {
+                    parametroServices.changeIsCheckedEnfermedades(
+                        index, value as bool);
+                    if (parametroServices.isCheckedEnfermedades[index]) {
+                      dataServices.enfermedadesUsuario.add({
+                        "enfermedad": parametroServices.enfermedades[index].id
+                      });
+                    } else {
+                      dataServices.enfermedadesUsuario.removeWhere((i) =>
+                          i["enfermedad"] ==
+                          parametroServices.enfermedades[index].id);
+                    }
+                  });
+                },
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _AntecedentesFamiliares extends StatefulWidget {
   const _AntecedentesFamiliares({
     Key? key,
@@ -187,8 +359,6 @@ class _AntecedentesFamiliares extends StatefulWidget {
 }
 
 class _AntecedentesFamiliaresState extends State<_AntecedentesFamiliares> {
-  List<String> resultado = [];
-
   @override
   void initState() {
     super.initState();
@@ -211,12 +381,12 @@ class _AntecedentesFamiliaresState extends State<_AntecedentesFamiliares> {
             itemBuilder: (context, index) {
               return CheckboxListTile(
                 title: Text(parametroServices.enfermedades[index].nombre),
-                value: parametroServices.isCheckedEnfermedades[index],
+                value: parametroServices.isCheckedAntecedentes[index],
                 onChanged: (value) {
                   setState(() {
-                    parametroServices.changeIsCheckedEnfermedades(
+                    parametroServices.changeIsCheckedAntecedentes(
                         index, value as bool);
-                    if (parametroServices.isCheckedEnfermedades[index]) {
+                    if (parametroServices.isCheckedAntecedentes[index]) {
                       dataServices.antecedentesFamiliares.add({
                         "enfermedad": parametroServices.enfermedades[index].id
                       });

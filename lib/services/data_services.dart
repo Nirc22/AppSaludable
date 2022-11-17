@@ -49,4 +49,5 @@ class DataServices with ChangeNotifier {
   }
 
   List<Map<String, String>> antecedentesFamiliares = [];
+  List<Map<String, String>> enfermedadesUsuario = [];
 }
