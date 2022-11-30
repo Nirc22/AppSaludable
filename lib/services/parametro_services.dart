@@ -10,6 +10,7 @@ class ParametroServices with ChangeNotifier {
   List<Parametro> habitos = [];
   List<bool> isCheckedAntecedentes = [];
   List<bool> isCheckedEnfermedades = [];
+  late List<Map<String, dynamic>> habitosUsuario;
 
   ParametroServices() {
     getEnfermedades();
@@ -51,6 +52,7 @@ class ParametroServices with ChangeNotifier {
 
     final parametroResponse = parametroResponseFromJson(resp.body);
     habitos = parametroResponse.parametros;
+    habitosUsuario = List<Map<String, dynamic>>.filled(habitos.length, {});
     notifyListeners();
   }
 }

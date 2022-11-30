@@ -18,7 +18,7 @@ class DataServices with ChangeNotifier {
     notifyListeners();
   }
 
-  int _edad = 0;
+  int _edad = 18;
   int get edad => _edad;
   set edad(int value) {
     _edad = value;
@@ -48,6 +48,14 @@ class DataServices with ChangeNotifier {
     notifyListeners();
   }
 
-  List<Map<String, String>> antecedentesFamiliares = [];
-  List<Map<String, String>> enfermedadesUsuario = [];
+  double _imc = 0;
+  double get imc => _imc;
+  set imc(double value) {
+    _imc = value;
+    notifyListeners();
+  }
+
+  List<String> antecedentesFamiliares = [];
+  List<String> enfermedadesUsuario = [];
+  List<Map<String, dynamic>> habitosUsuario = [];
 }

@@ -87,6 +87,54 @@ class AuthServices with ChangeNotifier {
     }
   }
 
+  Future<Map<String, dynamic>> updateInfo(
+      String id,
+      String? fechaNacimiento,
+      int edad,
+      String? paisOrigen,
+      String? paisResidencia,
+      String peso,
+      String altura,
+      String? sexo,
+      List<String> antecedentesFamiliares,
+      List<String> enfermedadesUsuario,
+      List<Map<String, dynamic>> habitosUsuario) async {
+    autenticando = true;
+
+    final data = {
+      "fechaNacimiento": fechaNacimiento,
+      "edad": edad,
+      "paisOrigen": paisOrigen,
+      "paisResidencia": paisResidencia,
+      "peso": peso,
+      "altura": altura,
+      "sexo": altura,
+      "antecedentesFamiliares": antecedentesFamiliares,
+      "enfermedadesUsuario": enfermedadesUsuario,
+      "habitosVida": habitosUsuario,
+    };
+
+    final url = Uri.parse("${Enviroments.apiUrl}/usuario/update/$id");
+
+    final resp = await http.put(url,
+        body: jsonEncode(data), headers: {"Content-Type": "application/json"});
+
+    print(resp.body);
+
+    autenticando = false;
+    if (resp.statusCode == 200) {
+      // final loginResponse = loginResponseFromJson(resp.body);
+      // usuario = loginResponse.usuario;
+      // await _guardarToken(loginResponse.token);
+      return {"ok": true, "msg": "Registro Exitoso"};
+    } else {
+      return {
+        "ok": false,
+        "msg": "Revise la información ingresada en el formulario"
+      };
+    }
+  }
+
   Future _guardarToken(String token) async {
     return await _storage.write(key: "token", value: token);
   }

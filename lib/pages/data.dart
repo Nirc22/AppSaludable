@@ -1,5 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:healthy_app/models/parametro.dart';
+import 'package:healthy_app/services/auth_services.dart';
 import 'package:healthy_app/services/parametro_services.dart';
 import 'package:healthy_app/widgets/custom_input_form.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +10,10 @@ import 'package:intl/intl.dart';
 import 'package:healthy_app/widgets/center_text.dart';
 import 'package:healthy_app/services/data_services.dart';
 import 'package:healthy_app/services/pais_services.dart';
+
+extension Ex on double {
+  double toPrecision(int n) => double.parse(toStringAsFixed(n));
+}
 
 class DataPage extends StatefulWidget {
   const DataPage({super.key});
@@ -122,6 +128,8 @@ class _DataPageState extends State<DataPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Text(
+                                "Seleccione si algun familiar padece o padeció alguna de las siguientes enfermedades:"),
                             _AntecedentesFamiliares(),
                           ],
                         ),
@@ -138,6 +146,8 @@ class _DataPageState extends State<DataPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Text(
+                                "Seleccione si padece alguna de las siguientes enfermedades:"),
                             _EnfermedadesUsuario(),
                           ],
                         ),
@@ -151,7 +161,14 @@ class _DataPageState extends State<DataPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                                "Con qué frecuencia realiza las siguientes actividades:"),
+                              "Con qué frecuencia realiza las siguientes actividades:",
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
                             _Habitos(),
                           ],
                         ),
@@ -174,12 +191,15 @@ class _DataPageState extends State<DataPage> {
   }
 
   continued() {
-    if (pasoActual < 1) {
+    if (pasoActual < 3) {
       setState(() {
         pasoActual += 1;
       });
-    } else if (pasoActual == 1) {
+    } else if (pasoActual == 3) {
       final datos = Provider.of<DataServices>(context, listen: false);
+      final authServices = Provider.of<AuthServices>(context, listen: false);
+      final parametroServices =
+          Provider.of<ParametroServices>(context, listen: false);
       print("Datos:  ");
       print(datos.fechaNacimiento);
       print(datos.edad);
@@ -189,9 +209,28 @@ class _DataPageState extends State<DataPage> {
       print(alturaCtrl.text);
       print(datos.sexo);
       print(datos.antecedentesFamiliares);
+      print(datos.enfermedadesUsuario);
+      print(parametroServices.habitosUsuario);
 
-      double imc = int.parse(alturaCtrl.text) / int.parse(pesoCtrl.text);
-      print(imc);
+      if (int.parse(pesoCtrl.text) != 0 && int.parse(alturaCtrl.text) != 0) {
+        datos.imc = (int.parse(pesoCtrl.text) /
+                pow((int.parse(alturaCtrl.text) / 100), 2))
+            .toPrecision(1);
+      }
+
+      print(datos.imc);
+      authServices.updateInfo(
+          authServices.usuario.id,
+          DateFormat("dd/MM/yyyy").format(datos.fechaNacimiento),
+          datos.edad,
+          datos.paisOrigen,
+          datos.paisResidencia,
+          pesoCtrl.text,
+          alturaCtrl.text,
+          datos.sexo,
+          datos.antecedentesFamiliares,
+          datos.enfermedadesUsuario,
+          parametroServices.habitosUsuario);
     }
   }
 
@@ -222,17 +261,26 @@ class _Habitos extends StatelessWidget {
       shrinkWrap: true,
       itemCount: habitos.length,
       itemBuilder: (context, index) => _HabitoRadio(
-        habito: habitos[index].nombre,
-      ),
+          indice: index,
+          idHabito: habitos[index].id,
+          habito: habitos[index].nombre,
+          valorRiesgo: habitos[index].valorRiesgo),
     );
   }
 }
 
 class _HabitoRadio extends StatefulWidget {
   final String habito;
+  final int indice;
+  final String idHabito;
+  final int valorRiesgo;
+
   const _HabitoRadio({
     Key? key,
     required this.habito,
+    required this.indice,
+    required this.valorRiesgo,
+    required this.idHabito,
   }) : super(key: key);
 
   @override
@@ -243,6 +291,17 @@ class _HabitoRadioState extends State<_HabitoRadio> {
   int? currentValue = 0;
 
   @override
+  void initState() {
+    final parametroServices =
+        Provider.of<ParametroServices>(context, listen: false);
+    parametroServices.habitosUsuario[widget.indice] = {
+      "habito": widget.idHabito,
+      "puntaje": 0
+    };
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       child: Column(
@@ -250,14 +309,14 @@ class _HabitoRadioState extends State<_HabitoRadio> {
         children: [
           Text(
             "${widget.habito}: ",
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
           RadioListTile(
             title: Text("Nunca"),
             value: 0,
             groupValue: currentValue,
             onChanged: (int? value) {
-              changeValue(value);
+              changeValue(value, widget.indice, widget.idHabito);
             },
           ),
           RadioListTile(
@@ -265,7 +324,7 @@ class _HabitoRadioState extends State<_HabitoRadio> {
             value: 1,
             groupValue: currentValue,
             onChanged: (int? value) {
-              changeValue(value);
+              changeValue(value, widget.indice, widget.idHabito);
             },
           ),
           RadioListTile(
@@ -273,7 +332,7 @@ class _HabitoRadioState extends State<_HabitoRadio> {
             value: 2,
             groupValue: currentValue,
             onChanged: (int? value) {
-              changeValue(value);
+              changeValue(value, widget.indice, widget.idHabito);
             },
           ),
           RadioListTile(
@@ -281,17 +340,25 @@ class _HabitoRadioState extends State<_HabitoRadio> {
             value: 3,
             groupValue: currentValue,
             onChanged: (int? value) {
-              changeValue(value);
+              changeValue(value, widget.indice, widget.idHabito);
             },
           ),
+          SizedBox(height: 10),
         ],
       ),
     );
   }
 
-  changeValue(int? value) {
+  changeValue(int? value, int indice, String idHabito) {
     setState(() {
       currentValue = value;
+      final puntaje = (value! * widget.valorRiesgo);
+      final parametroServices =
+          Provider.of<ParametroServices>(context, listen: false);
+      parametroServices.habitosUsuario[indice] = {
+        "habito": idHabito,
+        "puntaje": puntaje
+      };
     });
   }
 }
@@ -315,7 +382,7 @@ class _EnfermedadesUsuarioState extends State<_EnfermedadesUsuario> {
       child: Column(
         children: [
           for (var i in dataServices.enfermedadesUsuario) ...[
-            Text(i["enfermedad"] as String),
+            Text(i),
           ],
           ListView.builder(
             shrinkWrap: true,
@@ -329,13 +396,11 @@ class _EnfermedadesUsuarioState extends State<_EnfermedadesUsuario> {
                     parametroServices.changeIsCheckedEnfermedades(
                         index, value as bool);
                     if (parametroServices.isCheckedEnfermedades[index]) {
-                      dataServices.enfermedadesUsuario.add({
-                        "enfermedad": parametroServices.enfermedades[index].id
-                      });
+                      dataServices.enfermedadesUsuario
+                          .add(parametroServices.enfermedades[index].id);
                     } else {
-                      dataServices.enfermedadesUsuario.removeWhere((i) =>
-                          i["enfermedad"] ==
-                          parametroServices.enfermedades[index].id);
+                      dataServices.enfermedadesUsuario.removeWhere(
+                          (i) => i == parametroServices.enfermedades[index].id);
                     }
                   });
                 },
@@ -373,7 +438,7 @@ class _AntecedentesFamiliaresState extends State<_AntecedentesFamiliares> {
       child: Column(
         children: [
           for (var i in dataServices.antecedentesFamiliares) ...[
-            Text(i["enfermedad"] as String),
+            Text(i),
           ],
           ListView.builder(
             shrinkWrap: true,
@@ -387,13 +452,11 @@ class _AntecedentesFamiliaresState extends State<_AntecedentesFamiliares> {
                     parametroServices.changeIsCheckedAntecedentes(
                         index, value as bool);
                     if (parametroServices.isCheckedAntecedentes[index]) {
-                      dataServices.antecedentesFamiliares.add({
-                        "enfermedad": parametroServices.enfermedades[index].id
-                      });
+                      dataServices.antecedentesFamiliares
+                          .add(parametroServices.enfermedades[index].id);
                     } else {
-                      dataServices.antecedentesFamiliares.removeWhere((i) =>
-                          i["enfermedad"] ==
-                          parametroServices.enfermedades[index].id);
+                      dataServices.antecedentesFamiliares.removeWhere(
+                          (i) => i == parametroServices.enfermedades[index].id);
                     }
                   });
                 },
@@ -621,9 +684,8 @@ class DatePicker extends StatelessWidget {
     final dataServices = Provider.of<DataServices>(context);
 
     return ElevatedButton(
-      child: dataServices.fechaNacimientoSeleccionada
-          ? Text(DateFormat("dd/MM/yyyy").format(dataServices.fechaNacimiento))
-          : const Text("Seleccionar fecha"),
+      child:
+          Text(DateFormat("dd/MM/yyyy").format(dataServices.fechaNacimiento)),
       onPressed: () => selectDate(context),
     );
   }
