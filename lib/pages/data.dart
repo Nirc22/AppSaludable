@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:healthy_app/helpers/mostrar_alerta.dart';
 import 'package:healthy_app/services/auth_services.dart';
 import 'package:healthy_app/services/parametro_services.dart';
 import 'package:healthy_app/widgets/custom_input_form.dart';
@@ -190,7 +191,7 @@ class _DataPageState extends State<DataPage> {
     });
   }
 
-  continued() {
+  continued() async {
     if (pasoActual < 3) {
       setState(() {
         pasoActual += 1;
@@ -219,7 +220,8 @@ class _DataPageState extends State<DataPage> {
       }
 
       print(datos.imc);
-      authServices.updateInfo(
+
+      final updateOk = await authServices.updateInfo(
           authServices.usuario.id,
           DateFormat("dd/MM/yyyy").format(datos.fechaNacimiento),
           datos.edad,
@@ -227,10 +229,25 @@ class _DataPageState extends State<DataPage> {
           datos.paisResidencia,
           pesoCtrl.text,
           alturaCtrl.text,
+          datos.imc,
           datos.sexo,
           datos.antecedentesFamiliares,
           datos.enfermedadesUsuario,
           parametroServices.habitosUsuario);
+
+      if (updateOk["ok"]) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.green,
+                content: Text(updateOk["msg"]),
+              ),
+            )
+            .closed
+            .then((_) => Navigator.pushReplacementNamed(context, "loading"));
+      } else {
+        mostrarAlerta(context, "Actualización incorrecta", updateOk["msg"]);
+      }
     }
   }
 

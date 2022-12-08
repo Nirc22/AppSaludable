@@ -95,6 +95,7 @@ class AuthServices with ChangeNotifier {
       String? paisResidencia,
       String peso,
       String altura,
+      double imc,
       String? sexo,
       List<String> antecedentesFamiliares,
       List<String> enfermedadesUsuario,
@@ -108,7 +109,8 @@ class AuthServices with ChangeNotifier {
       "paisResidencia": paisResidencia,
       "peso": peso,
       "altura": altura,
-      "sexo": altura,
+      "imc": imc,
+      "sexo": sexo,
       "antecedentesFamiliares": antecedentesFamiliares,
       "enfermedadesUsuario": enfermedadesUsuario,
       "habitosVida": habitosUsuario,
@@ -119,13 +121,11 @@ class AuthServices with ChangeNotifier {
     final resp = await http.put(url,
         body: jsonEncode(data), headers: {"Content-Type": "application/json"});
 
-    print(resp.body);
-
     autenticando = false;
     if (resp.statusCode == 200) {
-      // final loginResponse = loginResponseFromJson(resp.body);
-      // usuario = loginResponse.usuario;
-      // await _guardarToken(loginResponse.token);
+      final loginResponse = loginResponseFromJson(resp.body);
+      usuario = loginResponse.usuario;
+      await _guardarToken(loginResponse.token);
       return {"ok": true, "msg": "Registro Exitoso"};
     } else {
       return {

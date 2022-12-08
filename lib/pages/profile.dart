@@ -14,44 +14,50 @@ class ProfilePage extends StatelessWidget {
       child: Scaffold(
         body: Container(
           width: double.infinity,
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             children: [
               Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.account_circle_outlined,
                     size: 70,
                   ),
-                  Expanded(child: SizedBox()),
+                  const Expanded(child: SizedBox()),
                   Column(
                     children: [
                       Text(
                         "${usuario.nombre} ${usuario.apellidos}",
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        "${usuario.rol.nombre}",
-                        style: TextStyle(
+                        usuario.rol.nombre,
+                        style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w600),
                       )
                     ],
                   ),
-                  Expanded(child: SizedBox()),
+                  const Expanded(child: SizedBox()),
                 ],
               ),
-              Expanded(child: SizedBox()),
+              if (usuario.isCompleteData) ...[
+                Text("Edad: ${usuario.edad} años"),
+                Text("Sexo: ${usuario.sexo}"),
+                Text("Peso: ${usuario.peso} Kg"),
+                Text("Altura: ${usuario.altura} cm"),
+              ],
+              const Expanded(child: SizedBox()),
               TextButton(
                 onPressed: () {
                   authServices.logout();
                   Navigator.pushReplacementNamed(context, "login");
                 },
                 child: Container(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: const [
                       Icon(
                         Icons.exit_to_app,
                         color: Colors.red,

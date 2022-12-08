@@ -16,13 +16,12 @@ class DetailsPage extends StatelessWidget {
       child: Scaffold(
         body: Container(
           width: double.infinity,
-          padding: EdgeInsets.all(15),
+          padding: const EdgeInsets.all(15),
           child: Column(
             children: [
               const CenterText(texto: "Detalles de recomendaciones"),
               const SizedBox(height: 20),
-              if (usuario.enfermedadesUsuario.isEmpty ||
-                  usuario.antecedentesFamiliares.isEmpty) ...[
+              if (!usuario.isCompleteData) ...[
                 const NoDataUser(),
               ] else
                 ...[],

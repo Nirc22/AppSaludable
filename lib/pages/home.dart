@@ -24,6 +24,13 @@ class HomePage extends StatelessWidget {
   }
 }
 
+class Nivel {
+  String nombre;
+  Color color;
+
+  Nivel(this.nombre, this.color);
+}
+
 class UserUI extends StatelessWidget {
   const UserUI({
     Key? key,
@@ -42,13 +49,93 @@ class UserUI extends StatelessWidget {
         children: [
           _TextHeader(usuario: usuario),
           const SizedBox(height: 20),
-          if (usuario.enfermedadesUsuario.isEmpty ||
-              usuario.antecedentesFamiliares.isEmpty) ...[
+          if (!usuario.isCompleteData) ...[
             const NoDataUser(),
-          ],
+          ] else ...[
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    offset: Offset(2, 2),
+                    blurRadius: 4,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              height: 100,
+              child: Column(
+                children: [
+                  const Text(
+                    "Indice de Masa Corporal",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 5),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "Valor:",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              usuario.imc.toString(),
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "Nivel:",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              obtenerNivel(usuario.imc as double).nombre,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color:
+                                    obtenerNivel(usuario.imc as double).color,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ]
         ],
       ),
     );
+  }
+
+  Nivel obtenerNivel(double nivel) {
+    if (nivel < 18.5) {
+      return Nivel("Bajo peso", Colors.yellow);
+    } else if (nivel >= 18.5 && nivel < 24.9) {
+      return Nivel("Normal", Colors.green);
+    } else if (nivel >= 25.0 && nivel < 29.9) {
+      return Nivel("Sobrepeso", Colors.orange);
+    } else {
+      return Nivel("Obesidad", Colors.red);
+    }
   }
 }
 

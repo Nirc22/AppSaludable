@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:healthy_app/models/pais.dart';
 import 'package:healthy_app/models/rol.dart';
+import 'package:healthy_app/models/tipoRiesgo.dart';
 
 Usuario usuarioFromJson(String str) => Usuario.fromJson(json.decode(str));
 
@@ -18,12 +20,16 @@ class Usuario {
     this.paisOrigen,
     this.peso,
     this.altura,
+    this.imc,
     required this.email,
     required this.rol,
     required this.antecedentesFamiliares,
     required this.enfermedadesUsuario,
     required this.habitosVida,
     required this.resultadosExamenes,
+    this.riesgoUsuario,
+    this.tipoRiesgo,
+    required this.isCompleteData,
   });
 
   String id;
@@ -32,16 +38,20 @@ class Usuario {
   int? edad;
   String? sexo;
   DateTime? fechaNacimiento;
-  String? paisResidencia;
-  String? paisOrigen;
+  Pais? paisResidencia;
+  Pais? paisOrigen;
   int? peso;
   int? altura;
+  double? imc;
   String email;
   Rol rol;
   List<dynamic> antecedentesFamiliares;
   List<dynamic> enfermedadesUsuario;
   List<dynamic> habitosVida;
   List<dynamic> resultadosExamenes;
+  int? riesgoUsuario;
+  TipoRiesgo? tipoRiesgo;
+  bool isCompleteData;
 
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
         id: json["_id"],
@@ -52,10 +62,11 @@ class Usuario {
         fechaNacimiento: json["fechaNacimiento"] != null
             ? DateTime.parse(json["fechaNacimiento"])
             : null,
-        paisResidencia: json["paisResidencia"],
-        paisOrigen: json["paisOrigen"],
+        paisResidencia: Pais.fromJson(json["paisResidencia"]),
+        paisOrigen: Pais.fromJson(json["paisOrigen"]),
         peso: json["peso"],
         altura: json["altura"],
+        imc: json["imc"],
         email: json["email"],
         rol: Rol.fromJson(json["rol"]),
         antecedentesFamiliares:
@@ -65,6 +76,9 @@ class Usuario {
         habitosVida: List<dynamic>.from(json["habitosVida"].map((x) => x)),
         resultadosExamenes:
             List<dynamic>.from(json["resultadosExamenes"].map((x) => x)),
+        riesgoUsuario: json["riesgoUsuario"],
+        tipoRiesgo: TipoRiesgo.fromJson(json["tipoRiesgo"]),
+        isCompleteData: json["isCompleteData"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -74,10 +88,11 @@ class Usuario {
         "edad": edad,
         "sexo": sexo,
         "fechaNacimiento": fechaNacimiento!.toIso8601String(),
-        "paisResidencia": paisResidencia,
-        "paisOrigen": paisOrigen,
+        "paisResidencia": paisResidencia!.toJson(),
+        "paisOrigen": paisOrigen!.toJson(),
         "peso": peso,
         "altura": altura,
+        "imc": imc,
         "email": email,
         "rol": rol.toJson(),
         "antecedentesFamiliares":
@@ -87,5 +102,8 @@ class Usuario {
         "habitosVida": List<dynamic>.from(habitosVida.map((x) => x)),
         "resultadosExamenes":
             List<dynamic>.from(resultadosExamenes.map((x) => x)),
+        "riesgoUsuario": riesgoUsuario,
+        "tipoRiesgo": tipoRiesgo!.toJson(),
+        "isCompleteData": isCompleteData,
       };
 }
