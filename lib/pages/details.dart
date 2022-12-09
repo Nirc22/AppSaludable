@@ -23,12 +23,35 @@ class DetailsPage extends StatelessWidget {
               const SizedBox(height: 20),
               if (!usuario.isCompleteData) ...[
                 const NoDataUser(),
-              ] else
-                ...[],
+              ] else ...[
+                Container(
+                  width: double.infinity,
+                  child: Column(
+                    children: [
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text("Recomendaciones por enfermedad"),
+                      ),
+                      FutureBuilder(
+                        future: checkLoginState(context),
+                        builder:
+                            (BuildContext context, AsyncSnapshot snapshot) {
+                          return Container();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future checkLoginState(BuildContext context) async {
+    final authServices = Provider.of<AuthServices>(context, listen: false);
+    final autenticado = await authServices.isLoggedIn();
   }
 }

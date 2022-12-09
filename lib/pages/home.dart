@@ -52,74 +52,75 @@ class UserUI extends StatelessWidget {
           if (!usuario.isCompleteData) ...[
             const NoDataUser(),
           ] else ...[
+            _IMC(
+              imc: usuario.imc as double,
+              nivel: obtenerNivel(usuario.imc as double),
+            ),
             Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white,
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    offset: Offset(2, 2),
-                    blurRadius: 4,
-                    spreadRadius: 2,
-                  ),
-                ],
+              alignment: Alignment.center,
+              margin: const EdgeInsets.only(top: 15, bottom: 5),
+              child: const Text(
+                "Recomendaciones Generales:",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
-              width: double.infinity,
-              padding: const EdgeInsets.all(10),
-              height: 100,
-              child: Column(
-                children: [
-                  const Text(
-                    "Indice de Masa Corporal",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 5),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Text(
-                              "Valor:",
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              usuario.imc.toString(),
+            ),
+            Container(
+              margin: const EdgeInsets.only(bottom: 10),
+              child: Text(
+                "Riesgo: ${usuario.tipoRiesgo!.nombre}",
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      offset: Offset(2, 2),
+                      blurRadius: 4,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: ListView.builder(
+                  itemCount: usuario.tipoRiesgo!.recomendaciones.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      child: Column(
+                        children: [
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "${index + 1}. ${usuario.tipoRiesgo!.recomendaciones[index]["recomendacion"]["nombre"]}:",
                               style: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600),
                             ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Text(
-                              "Nivel:",
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              usuario.tipoRiesgo!.recomendaciones[index]
+                                  ["recomendacion"]["recomendacion"],
+                              style: const TextStyle(fontSize: 16),
                             ),
-                            Text(
-                              obtenerNivel(usuario.imc as double).nombre,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color:
-                                    obtenerNivel(usuario.imc as double).color,
-                              ),
-                            ),
+                          ),
+                          if (index !=
+                              usuario.tipoRiesgo!.recomendaciones.length -
+                                  1) ...[
+                            const Divider(color: Colors.black38),
                           ],
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
-                ],
+                    );
+                  },
+                ),
               ),
-            ),
+            )
           ]
         ],
       ),
@@ -136,6 +137,88 @@ class UserUI extends StatelessWidget {
     } else {
       return Nivel("Obesidad", Colors.red);
     }
+  }
+}
+
+class _IMC extends StatelessWidget {
+  final double imc;
+  final Nivel nivel;
+
+  const _IMC({
+    Key? key,
+    required this.imc,
+    required this.nivel,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            offset: Offset(2, 2),
+            blurRadius: 4,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      width: double.infinity,
+      padding: const EdgeInsets.all(10),
+      height: 100,
+      child: Column(
+        children: [
+          const Text(
+            "Indice de Masa Corporal",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 5),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Valor:",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      imc.toString(),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Nivel:",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      nivel.nombre,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: nivel.color,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 
