@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:healthy_app/services/recomendaciones_services.dart';
 import 'package:provider/provider.dart';
 
 import 'package:healthy_app/routes/routes.dart';
@@ -27,6 +28,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => ParametroServices(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => RecomendacionesServices(),
         ),
       ],
       child: MaterialApp(
