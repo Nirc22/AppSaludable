@@ -79,25 +79,37 @@ class _FormularioState extends State<Formulario> {
                 ? null
                 : () async {
                     FocusScope.of(context).unfocus();
-                    final registroOk = await authServices.register(
-                        nombresCtrl.text.trim(),
-                        apellidosCtrl.text.trim(),
-                        correoCtrl.text.trim(),
-                        passCtrl.text.trim());
-                    if (registroOk["ok"]) {
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(
-                            SnackBar(
-                              backgroundColor: Colors.green,
-                              content: Text(registroOk["msg"]),
-                            ),
-                          )
-                          .closed
-                          .then((_) => Navigator.pushReplacementNamed(
-                              context, "loading"));
+                    if (nombresCtrl.text.isEmpty ||
+                        apellidosCtrl.text.isEmpty ||
+                        correoCtrl.text.isEmpty ||
+                        passCtrl.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.red,
+                          content: Text("Debe completar la información"),
+                        ),
+                      );
                     } else {
-                      mostrarAlerta(
-                          context, "Registro incorrecto", registroOk["msg"]);
+                      final registroOk = await authServices.register(
+                          nombresCtrl.text.trim(),
+                          apellidosCtrl.text.trim(),
+                          correoCtrl.text.trim(),
+                          passCtrl.text.trim());
+                      if (registroOk["ok"]) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(
+                              SnackBar(
+                                backgroundColor: Colors.green,
+                                content: Text(registroOk["msg"]),
+                              ),
+                            )
+                            .closed
+                            .then((_) => Navigator.pushReplacementNamed(
+                                context, "loading"));
+                      } else {
+                        mostrarAlerta(
+                            context, "Registro incorrecto", registroOk["msg"]);
+                      }
                     }
                   },
           ),

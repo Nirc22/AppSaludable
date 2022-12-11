@@ -112,7 +112,7 @@ class UserUI extends StatelessWidget {
                           if (index !=
                               usuario.tipoRiesgo!.recomendaciones.length -
                                   1) ...[
-                            const Divider(color: Colors.black38),
+                            const Divider(),
                           ],
                         ],
                       ),
