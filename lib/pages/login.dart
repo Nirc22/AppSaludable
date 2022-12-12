@@ -53,11 +53,18 @@ class _FormState extends State<_Form> {
   final passCtrl = TextEditingController();
 
   @override
+  void dispose() {
+    emailCtrl.dispose();
+    passCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final authServices = Provider.of<AuthServices>(context);
 
     return Container(
-      margin: EdgeInsets.only(top: 40),
+      margin: const EdgeInsets.only(top: 40),
       padding: const EdgeInsets.symmetric(horizontal: 50),
       child: Column(
         children: [
@@ -80,13 +87,22 @@ class _FormState extends State<_Form> {
                 ? null
                 : () async {
                     FocusScope.of(context).unfocus();
-                    final loginOk = await authServices.login(
-                        emailCtrl.text.trim(), passCtrl.text.trim());
-                    if (loginOk["ok"]) {
-                      Navigator.pushReplacementNamed(context, "loading");
+                    if (emailCtrl.text.isEmpty || passCtrl.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          backgroundColor: Colors.red,
+                          content: Text("Debe completar los campos de texto"),
+                        ),
+                      );
                     } else {
-                      mostrarAlerta(
-                          context, "Login incorrecto", loginOk["msg"]);
+                      final loginOk = await authServices.login(
+                          emailCtrl.text.trim(), passCtrl.text.trim());
+                      if (loginOk["ok"]) {
+                        Navigator.pushReplacementNamed(context, "loading");
+                      } else {
+                        mostrarAlerta(
+                            context, "Login incorrecto", loginOk["msg"]);
+                      }
                     }
                   },
           )

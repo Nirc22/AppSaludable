@@ -62,11 +62,15 @@ class Usuario {
         fechaNacimiento: json["fechaNacimiento"] != null
             ? DateTime.parse(json["fechaNacimiento"])
             : null,
-        paisResidencia: Pais.fromJson(json["paisResidencia"]),
-        paisOrigen: Pais.fromJson(json["paisOrigen"]),
+        paisResidencia: json["paisResidencia"] != null
+            ? Pais.fromJson(json["paisResidencia"])
+            : null,
+        paisOrigen: json["paisOrigen"] != null
+            ? Pais.fromJson(json["paisOrigen"])
+            : null,
         peso: json["peso"],
         altura: json["altura"],
-        imc: json["imc"],
+        imc: json["imc"] != null ? json["imc"].toDouble() : null,
         email: json["email"],
         rol: Rol.fromJson(json["rol"]),
         antecedentesFamiliares:
@@ -77,7 +81,9 @@ class Usuario {
         resultadosExamenes:
             List<dynamic>.from(json["resultadosExamenes"].map((x) => x)),
         riesgoUsuario: json["riesgoUsuario"],
-        tipoRiesgo: TipoRiesgo.fromJson(json["tipoRiesgo"]),
+        tipoRiesgo: json["tipoRiesgo"] != null
+            ? TipoRiesgo.fromJson(json["tipoRiesgo"])
+            : null,
         isCompleteData: json["isCompleteData"],
       );
 

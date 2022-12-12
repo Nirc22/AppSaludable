@@ -74,6 +74,7 @@ class _DetailsPageState extends State<DetailsPage>
                               final name = snapshot.data.keys.toList()[index];
                               final valores = snapshot.data[name];
                               return Container(
+                                margin: const EdgeInsets.only(bottom: 10),
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),

@@ -6,7 +6,7 @@ class Option {
 }
 
 List<Option> opciones = [
-  Option(nombre: "Paises", ruta: "profile"),
+  Option(nombre: "Paises", ruta: "pais"),
   Option(nombre: "Riesgos", ruta: "profile"),
   Option(nombre: "Tipos de recomendación", ruta: "profile"),
   Option(nombre: "Recomendaciones", ruta: "profile"),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:healthy_app/pages/admin/pais.dart';
 
 import 'package:healthy_app/pages/login.dart';
 import 'package:healthy_app/pages/register.dart';
@@ -12,4 +13,5 @@ final Map<String, Widget Function(BuildContext)> appRoutes = {
   "loading": (BuildContext context) => LoadingPage(),
   "tabs": (BuildContext context) => TabsPage(),
   "data": (BuildContext context) => DataPage(),
+  "pais": (BuildContext context) => PaisPage(),
 };

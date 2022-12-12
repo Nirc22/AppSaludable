@@ -49,6 +49,15 @@ class _FormularioState extends State<Formulario> {
   final passCtrl = TextEditingController();
 
   @override
+  void dispose() {
+    nombresCtrl.dispose();
+    apellidosCtrl.dispose();
+    correoCtrl.dispose();
+    passCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final authServices = Provider.of<AuthServices>(context);
 
@@ -84,7 +93,7 @@ class _FormularioState extends State<Formulario> {
                         correoCtrl.text.isEmpty ||
                         passCtrl.text.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           backgroundColor: Colors.red,
                           content: Text("Debe completar la información"),
                         ),
@@ -95,6 +104,7 @@ class _FormularioState extends State<Formulario> {
                           apellidosCtrl.text.trim(),
                           correoCtrl.text.trim(),
                           passCtrl.text.trim());
+                      print(registroOk);
                       if (registroOk["ok"]) {
                         ScaffoldMessenger.of(context)
                             .showSnackBar(

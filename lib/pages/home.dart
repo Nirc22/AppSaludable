@@ -253,22 +253,25 @@ class AdminUI extends StatelessWidget {
                 itemCount: opciones.length,
                 itemBuilder: (context, index) {
                   Option opcion = opciones[index];
-                  return Card(
-                    elevation: 2,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        const Icon(
-                          Icons.analytics_outlined,
-                          size: 60,
-                        ),
-                        Text(
-                          opcion.nombre,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600),
-                        )
-                      ],
+                  return InkWell(
+                    onTap: () => Navigator.pushNamed(context, opcion.ruta),
+                    child: Card(
+                      elevation: 2,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          const Icon(
+                            Icons.analytics_outlined,
+                            size: 60,
+                          ),
+                          Text(
+                            opcion.nombre,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600),
+                          )
+                        ],
+                      ),
                     ),
                   );
                 },

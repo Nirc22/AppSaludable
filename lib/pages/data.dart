@@ -36,6 +36,13 @@ class _DataPageState extends State<DataPage> {
   }
 
   @override
+  void dispose() {
+    pesoCtrl.dispose();
+    alturaCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final dataServices = Provider.of<DataServices>(context);
 
@@ -47,7 +54,17 @@ class _DataPageState extends State<DataPage> {
           child: Column(
             children: [
               const CenterText(texto: "Completa la información"),
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 15),
+                child: Text(
+                  "Es importante que ingrese la información lo más preciso posible para generar sus recomendaciones de salud de manera correcta, en caso de no tener algún dato se recomienda completar el formulario posteriormente.",
+                  textAlign: TextAlign.justify,
+                  style:
+                      TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
+                ),
+              ),
+              const SizedBox(height: 5),
               Expanded(
                 child: Stepper(
                   physics: const ScrollPhysics(),
@@ -130,7 +147,11 @@ class _DataPageState extends State<DataPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                                "Seleccione si algun familiar padece o padeció alguna de las siguientes enfermedades:"),
+                              "Seleccione si algun familiar padece o padeció alguna de las siguientes enfermedades:",
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
                             _AntecedentesFamiliares(),
                           ],
                         ),
@@ -148,7 +169,11 @@ class _DataPageState extends State<DataPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                                "Seleccione si padece alguna de las siguientes enfermedades:"),
+                              "Seleccione si padece alguna de las siguientes enfermedades:",
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
                             _EnfermedadesUsuario(),
                           ],
                         ),
@@ -201,17 +226,6 @@ class _DataPageState extends State<DataPage> {
       final authServices = Provider.of<AuthServices>(context, listen: false);
       final parametroServices =
           Provider.of<ParametroServices>(context, listen: false);
-      print("Datos:  ");
-      print(datos.fechaNacimiento);
-      print(datos.edad);
-      print(datos.paisOrigen);
-      print(datos.paisResidencia);
-      print(pesoCtrl.text);
-      print(alturaCtrl.text);
-      print(datos.sexo);
-      print(datos.antecedentesFamiliares);
-      print(datos.enfermedadesUsuario);
-      print(parametroServices.habitosUsuario);
 
       if (int.parse(pesoCtrl.text) != 0 && int.parse(alturaCtrl.text) != 0) {
         datos.imc = (int.parse(pesoCtrl.text) /
@@ -219,34 +233,41 @@ class _DataPageState extends State<DataPage> {
             .toPrecision(1);
       }
 
-      print(datos.imc);
-
-      final updateOk = await authServices.updateInfo(
-          authServices.usuario.id,
-          DateFormat("dd/MM/yyyy").format(datos.fechaNacimiento),
-          datos.edad,
-          datos.paisOrigen,
-          datos.paisResidencia,
-          pesoCtrl.text,
-          alturaCtrl.text,
-          datos.imc,
-          datos.sexo,
-          datos.antecedentesFamiliares,
-          datos.enfermedadesUsuario,
-          parametroServices.habitosUsuario);
-
-      if (updateOk["ok"]) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(
-              SnackBar(
-                backgroundColor: Colors.green,
-                content: Text(updateOk["msg"]),
-              ),
-            )
-            .closed
-            .then((_) => Navigator.pushReplacementNamed(context, "loading"));
+      if (int.parse(pesoCtrl.text) == 0 || int.parse(alturaCtrl.text) == 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.red,
+            content: Text("Debe completar el campo de peso y altura"),
+          ),
+        );
       } else {
-        mostrarAlerta(context, "Actualización incorrecta", updateOk["msg"]);
+        final updateOk = await authServices.updateInfo(
+            authServices.usuario.id,
+            DateFormat("dd/MM/yyyy").format(datos.fechaNacimiento),
+            datos.edad,
+            datos.paisOrigen,
+            datos.paisResidencia,
+            pesoCtrl.text,
+            alturaCtrl.text,
+            datos.imc,
+            datos.sexo,
+            datos.antecedentesFamiliares,
+            datos.enfermedadesUsuario,
+            parametroServices.habitosUsuario);
+
+        if (updateOk["ok"]) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(
+                SnackBar(
+                  backgroundColor: Colors.green,
+                  content: Text(updateOk["msg"]),
+                ),
+              )
+              .closed
+              .then((_) => Navigator.pushReplacementNamed(context, "loading"));
+        } else {
+          mostrarAlerta(context, "Actualización incorrecta", updateOk["msg"]);
+        }
       }
     }
   }
