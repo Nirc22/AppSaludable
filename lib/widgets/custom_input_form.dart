@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomInputForm extends StatelessWidget {
   final String texto;
   final TextEditingController textController;
   final TextInputType keyboardType;
   final bool isActive;
+  final List<TextInputFormatter>? formatoInputs;
 
   const CustomInputForm({
     Key? key,
@@ -12,6 +14,7 @@ class CustomInputForm extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.isActive = true,
     required this.textController,
+    this.formatoInputs,
   }) : super(key: key);
 
   @override
@@ -33,6 +36,7 @@ class CustomInputForm extends StatelessWidget {
             enabled: isActive,
             controller: textController,
             keyboardType: keyboardType,
+            inputFormatters: formatoInputs,
             decoration: InputDecoration(
               contentPadding:
                   EdgeInsets.symmetric(vertical: 10, horizontal: 15),

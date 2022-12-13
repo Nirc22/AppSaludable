@@ -7,11 +7,11 @@ class Option {
 
 List<Option> opciones = [
   Option(nombre: "Paises", ruta: "pais"),
-  Option(nombre: "Riesgos", ruta: "profile"),
-  Option(nombre: "Tipos de recomendación", ruta: "profile"),
-  Option(nombre: "Recomendaciones", ruta: "profile"),
-  Option(nombre: "Tipos de parametros", ruta: "profile"),
-  Option(nombre: "Parametros", ruta: "profile"),
-  Option(nombre: "Tipos de examen", ruta: "profile"),
-  Option(nombre: "Examenes", ruta: "profile"),
+  Option(nombre: "Riesgos", ruta: "riesgos"),
+  Option(nombre: "Tipos de recomendación", ruta: "tipoRecomendacion"),
+  Option(nombre: "Recomendaciones", ruta: "riesgos"),
+  Option(nombre: "Tipos de parametros", ruta: "tipoParametro"),
+  Option(nombre: "Parametros", ruta: "parametro"),
+  // Option(nombre: "Tipos de examen", ruta: "riesgos"),
+  // Option(nombre: "Examenes", ruta: "riesgos"),
 ];

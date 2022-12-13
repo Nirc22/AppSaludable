@@ -6,6 +6,7 @@ import 'package:healthy_app/global/environments.dart';
 import 'package:healthy_app/models/parametro.dart';
 
 class ParametroServices with ChangeNotifier {
+  List<Parametro> parametros = [];
   List<Parametro> enfermedades = [];
   List<Parametro> habitos = [];
   List<bool> isCheckedAntecedentes = [];
@@ -13,6 +14,7 @@ class ParametroServices with ChangeNotifier {
   late List<Map<String, dynamic>> habitosUsuario;
 
   ParametroServices() {
+    getParametros();
     getEnfermedades();
     getHabitos();
   }
@@ -53,6 +55,28 @@ class ParametroServices with ChangeNotifier {
     final parametroResponse = parametroResponseFromJson(resp.body);
     habitos = parametroResponse.parametros;
     habitosUsuario = List<Map<String, dynamic>>.filled(habitos.length, {});
+    notifyListeners();
+  }
+
+  getParametros() async {
+    final url = Uri.parse("${Enviroments.apiUrl}/parametro");
+
+    final resp =
+        await http.get(url, headers: {"Content-Type": "application/json"});
+
+    final parametroResponse = parametroResponseFromJson(resp.body);
+    parametros = parametroResponse.parametros;
+    notifyListeners();
+  }
+
+  crearParametro() async {
+    final url = Uri.parse("${Enviroments.apiUrl}/parametro/create");
+
+    final resp =
+        await http.post(url, headers: {"Content-Type": "application/json"});
+
+    final parametroResponse = parametroResponseFromJson(resp.body);
+    parametros = parametroResponse.parametros;
     notifyListeners();
   }
 }

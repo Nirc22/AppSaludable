@@ -76,6 +76,7 @@ class _FormularioState extends State<Formulario> {
           CustomInputForm(
             textController: correoCtrl,
             texto: "Correo:",
+            keyboardType: TextInputType.emailAddress,
           ),
           CustomInputForm(
             textController: passCtrl,

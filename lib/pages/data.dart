@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:healthy_app/helpers/mostrar_alerta.dart';
 import 'package:healthy_app/services/auth_services.dart';
 import 'package:healthy_app/services/parametro_services.dart';
@@ -30,8 +31,6 @@ class _DataPageState extends State<DataPage> {
 
   @override
   void initState() {
-    pesoCtrl.text = "0";
-    alturaCtrl.text = "0";
     super.initState();
   }
 
@@ -114,7 +113,10 @@ class _DataPageState extends State<DataPage> {
                                         child: CustomInputForm(
                                           texto: "Peso (Kg):",
                                           textController: pesoCtrl,
-                                          keyboardType: TextInputType.number,
+                                          formatoInputs: [
+                                            FilteringTextInputFormatter
+                                                .digitsOnly
+                                          ],
                                         ),
                                       ),
                                       Spacer(),
@@ -122,7 +124,10 @@ class _DataPageState extends State<DataPage> {
                                         child: CustomInputForm(
                                           texto: "Altura (cm):",
                                           textController: alturaCtrl,
-                                          keyboardType: TextInputType.number,
+                                          formatoInputs: [
+                                            FilteringTextInputFormatter
+                                                .digitsOnly
+                                          ],
                                         ),
                                       ),
                                     ],

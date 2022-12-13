@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:healthy_app/services/recomendaciones_services.dart';
+import 'package:healthy_app/services/riesgo_services.dart';
+import 'package:healthy_app/services/tipo_parametro_services.dart';
+import 'package:healthy_app/services/tipo_recomendacion_services.dart';
 import 'package:provider/provider.dart';
 
 import 'package:healthy_app/routes/routes.dart';
@@ -31,6 +34,15 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => RecomendacionesServices(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => RiesgoServices(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => TipoRecomendacionServices(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => TipoParametroServices(),
         ),
       ],
       child: MaterialApp(
