@@ -42,6 +42,7 @@ class _ParametroPageState extends State<ParametroPage> {
               DataColumn(label: Text("#")),
               DataColumn(label: Text("Nombre")),
               DataColumn(label: Text("Tipo Parametro")),
+              DataColumn(label: Text("Valor Riesgo")),
             ],
             source: ParametroData(parametros),
           ),
@@ -72,6 +73,7 @@ class ParametroData extends DataTableSource {
         DataCell(Text((index + 1).toString())),
         DataCell(Text(parametros[index].nombre)),
         DataCell(Text(parametros[index].tipoParametro.nombre)),
+        DataCell(Text(parametros[index].valorRiesgo.toString())),
       ],
     );
   }
@@ -103,16 +105,22 @@ class _AddParametroPageState extends State<AddParametroPage> {
       create: (context) => ParametroDataForm(),
       builder: (context, child) => Scaffold(
         body: SafeArea(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.9,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  _LabelAddParametro(),
-                  Formulario(tipoParametros: tipoParametros),
-                ],
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text("Agregar Parametro"),
+              centerTitle: true,
+            ),
+            body: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.9,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 15),
+                    Formulario(tipoParametros: tipoParametros),
+                  ],
+                ),
               ),
             ),
           ),
@@ -200,11 +208,27 @@ class _FormularioState extends State<Formulario> {
           const SizedBox(height: 20),
           CustomButton(
             texto: "Agregar",
-            onPressed: () {},
+            onPressed: () => crearParametro(context, nombresCtrl.text,
+                valorRiesgoCtrl.text, parametroDataForm.valorRiesgo),
           ),
         ],
       ),
     );
+  }
+
+  Future crearParametro(BuildContext context, String nombre, String valorRiesgo,
+      String? idTipoParametro) async {
+    final parametroServices =
+        Provider.of<ParametroServices>(context, listen: false);
+    final token = await AuthServices.getToken();
+
+    if (idTipoParametro == "632e694a7bab36dbf8f79e4f") {
+      valorRiesgo = "0";
+    }
+
+    await parametroServices.crearParametro(
+        nombre, valorRiesgo, idTipoParametro, token);
+    Navigator.pushNamed(context, "parametro");
   }
 }
 

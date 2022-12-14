@@ -71,7 +71,7 @@ class _FormState extends State<_Form> {
           CustomInput(
             icon: Icons.mail_outline,
             placeholder: 'Correo',
-            keyboardType: TextInputType.text,
+            keyboardType: TextInputType.emailAddress,
             textController: emailCtrl,
           ),
           CustomInput(

@@ -23,8 +23,8 @@ class TipoRiesgo {
   String nombre;
   List<dynamic> recomendaciones;
   int v;
-  int rangoMaximo;
-  int rangoMinimo;
+  double rangoMaximo;
+  double rangoMinimo;
 
   factory TipoRiesgo.fromJson(Map<String, dynamic> json) => TipoRiesgo(
         id: json["_id"],
@@ -32,8 +32,8 @@ class TipoRiesgo {
         recomendaciones:
             List<dynamic>.from(json["recomendaciones"].map((x) => x)),
         v: json["__v"],
-        rangoMaximo: json["rangoMaximo"],
-        rangoMinimo: json["rangoMinimo"],
+        rangoMaximo: json["rangoMaximo"].toDouble(),
+        rangoMinimo: json["rangoMinimo"].toDouble(),
       );
 
   Map<String, dynamic> toJson() => {

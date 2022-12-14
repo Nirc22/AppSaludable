@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:healthy_app/models/parametro_response.dart';
 import 'package:http/http.dart' as http;
@@ -69,14 +71,36 @@ class ParametroServices with ChangeNotifier {
     notifyListeners();
   }
 
-  crearParametro() async {
+  crearParametro(String nombre, String valorRiesgo, String? idTipoParametro,
+      String? token) async {
     final url = Uri.parse("${Enviroments.apiUrl}/parametro/create");
 
-    final resp =
-        await http.post(url, headers: {"Content-Type": "application/json"});
+    final data = {
+      "nombre": allWordsCapitilize(nombre),
+      "valorRiesgo": valorRiesgo,
+      "idTipoParametro": idTipoParametro
+    };
+
+    final resp = await http.post(url,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        },
+        body: jsonEncode(data));
 
     final parametroResponse = parametroResponseFromJson(resp.body);
     parametros = parametroResponse.parametros;
     notifyListeners();
+  }
+}
+
+String allWordsCapitilize(String str) {
+  if (str.length > 0) {
+    return str.toLowerCase().split(' ').map((word) {
+      String leftText = (word.length > 1) ? word.substring(1, word.length) : '';
+      return word[0].toUpperCase() + leftText;
+    }).join(' ');
+  } else {
+    return "";
   }
 }

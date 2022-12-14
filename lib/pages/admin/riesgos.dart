@@ -43,8 +43,8 @@ class RiesgosData extends DataTableSource {
       cells: [
         DataCell(Text((index + 1).toString())),
         DataCell(Text(riesgos[index].nombre)),
-        DataCell(Text(riesgos[index].rangoMinimo.toString())),
-        DataCell(Text(riesgos[index].rangoMaximo.toString())),
+        DataCell(Text(riesgos[index].rangoMinimo.toStringAsFixed(1))),
+        DataCell(Text(riesgos[index].rangoMaximo.toStringAsFixed(1))),
       ],
     );
   }

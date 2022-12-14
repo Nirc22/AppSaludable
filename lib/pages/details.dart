@@ -68,53 +68,67 @@ class _DetailsPageState extends State<DetailsPage>
                           context, usuario.id as String),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (snapshot.hasData) {
-                          return ListView.builder(
-                            itemCount: snapshot.data?.keys.toList().length,
-                            itemBuilder: (context, index) {
-                              final name = snapshot.data.keys.toList()[index];
-                              final valores = snapshot.data[name];
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 10),
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.white,
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      offset: Offset(2, 2),
-                                      blurRadius: 4,
-                                      spreadRadius: 2,
-                                    ),
-                                  ],
+                          if (snapshot.data?.keys.toList().length == 0) {
+                            return const Center(
+                              child: Text(
+                                "No hay información para mostrar",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      margin: const EdgeInsets.only(bottom: 10),
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        "$name:",
-                                        style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700),
+                              ),
+                            );
+                          } else {
+                            return ListView.builder(
+                              itemCount: snapshot.data?.keys.toList().length,
+                              itemBuilder: (context, index) {
+                                final name = snapshot.data.keys.toList()[index];
+                                final valores = snapshot.data[name];
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 10),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Colors.white,
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        offset: Offset(2, 2),
+                                        blurRadius: 4,
+                                        spreadRadius: 2,
                                       ),
-                                    ),
-                                    for (var i in valores) ...[
+                                    ],
+                                  ),
+                                  child: Column(
+                                    children: [
                                       Container(
+                                        margin:
+                                            const EdgeInsets.only(bottom: 10),
                                         alignment: Alignment.centerLeft,
                                         child: Text(
-                                          i["recomendacion"],
-                                          style: const TextStyle(fontSize: 16),
+                                          "$name:",
+                                          style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700),
                                         ),
                                       ),
-                                      const Divider(),
+                                      for (var i in valores) ...[
+                                        Container(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            i["recomendacion"],
+                                            style:
+                                                const TextStyle(fontSize: 16),
+                                          ),
+                                        ),
+                                        const Divider(),
+                                      ],
                                     ],
-                                  ],
-                                ),
-                              );
-                            },
-                          );
+                                  ),
+                                );
+                              },
+                            );
+                          }
                         } else {
                           return const Center(
                             child: CircularProgressIndicator(),

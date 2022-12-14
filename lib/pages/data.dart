@@ -113,6 +113,7 @@ class _DataPageState extends State<DataPage> {
                                         child: CustomInputForm(
                                           texto: "Peso (Kg):",
                                           textController: pesoCtrl,
+                                          keyboardType: TextInputType.number,
                                           formatoInputs: [
                                             FilteringTextInputFormatter
                                                 .digitsOnly
@@ -123,6 +124,7 @@ class _DataPageState extends State<DataPage> {
                                       Flexible(
                                         child: CustomInputForm(
                                           texto: "Altura (cm):",
+                                          keyboardType: TextInputType.number,
                                           textController: alturaCtrl,
                                           formatoInputs: [
                                             FilteringTextInputFormatter
