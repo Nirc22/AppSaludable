@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:healthy_app/pages/admin/pais.dart';
 import 'package:healthy_app/pages/admin/parametro.dart';
+import 'package:healthy_app/pages/admin/recomendaciones.dart';
 import 'package:healthy_app/pages/admin/riesgos.dart';
 import 'package:healthy_app/pages/admin/tipo_parametro.dart';
 import 'package:healthy_app/pages/admin/tipo_recomendacion.dart';
@@ -22,4 +23,5 @@ final Map<String, Widget Function(BuildContext)> appRoutes = {
   "tipoRecomendacion": (BuildContext context) => TipoRecomendacionPage(),
   "tipoParametro": (BuildContext context) => TipoParametroPage(),
   "parametro": (BuildContext context) => ParametroPage(),
+  "recomendaciones": (BuildContext context) => RecomendacionesPage(),
 };

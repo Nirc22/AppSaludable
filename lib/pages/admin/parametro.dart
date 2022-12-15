@@ -16,16 +16,6 @@ class ParametroPage extends StatefulWidget {
 }
 
 class _ParametroPageState extends State<ParametroPage> {
-  final nombreCtrl = TextEditingController();
-  final valorRiesgoCtrl = TextEditingController();
-
-  @override
-  void initState() {
-    nombreCtrl.text = "";
-    valorRiesgoCtrl.text = "0";
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final parametros = Provider.of<ParametroServices>(context).parametros;
