@@ -10,6 +10,7 @@ import 'package:healthy_app/models/parametro.dart';
 class ParametroServices with ChangeNotifier {
   List<Parametro> parametros = [];
   List<Parametro> enfermedades = [];
+  List<Parametro> sintomas = [];
   List<Parametro> habitos = [];
   List<bool> isCheckedAntecedentes = [];
   List<bool> isCheckedEnfermedades = [];
@@ -18,6 +19,7 @@ class ParametroServices with ChangeNotifier {
   ParametroServices() {
     getParametros();
     getEnfermedades();
+    getSintomas();
     getHabitos();
   }
 
@@ -60,6 +62,18 @@ class ParametroServices with ChangeNotifier {
     notifyListeners();
   }
 
+  getSintomas() async {
+    final url = Uri.parse(
+        "${Enviroments.apiUrl}/parametro/tipo/632e694a7bab36dbf8f79e4f");
+
+    final resp =
+        await http.get(url, headers: {"Content-Type": "application/json"});
+
+    final parametroResponse = parametroResponseFromJson(resp.body);
+    sintomas = parametroResponse.parametros;
+    notifyListeners();
+  }
+
   getParametros() async {
     final url = Uri.parse("${Enviroments.apiUrl}/parametro");
 
@@ -87,6 +101,41 @@ class ParametroServices with ChangeNotifier {
           "Authorization": "Bearer $token"
         },
         body: jsonEncode(data));
+
+    final parametroResponse = parametroResponseFromJson(resp.body);
+    parametros = parametroResponse.parametros;
+    notifyListeners();
+  }
+
+  actualizarParametro(String id, String nombre, String valorRiesgo,
+      String? idTipoParametro, String? token) async {
+    final url = Uri.parse("${Enviroments.apiUrl}/parametro/update/$id");
+
+    final data = {
+      "nombre": allWordsCapitilize(nombre),
+      "valorRiesgo": valorRiesgo,
+      "idTipoParametro": idTipoParametro
+    };
+
+    final resp = await http.put(url,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        },
+        body: jsonEncode(data));
+
+    final parametroResponse = parametroResponseFromJson(resp.body);
+    parametros = parametroResponse.parametros;
+    notifyListeners();
+  }
+
+  eliminarParametro(String id, String? token) async {
+    final url = Uri.parse("${Enviroments.apiUrl}/parametro/delete/$id");
+
+    final resp = await http.delete(url, headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $token"
+    });
 
     final parametroResponse = parametroResponseFromJson(resp.body);
     parametros = parametroResponse.parametros;

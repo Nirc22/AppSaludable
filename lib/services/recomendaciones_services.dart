@@ -76,4 +76,71 @@ class RecomendacionesServices with ChangeNotifier {
       return {"ok": false, "msg": "Se ha producido un error"};
     }
   }
+
+  crearRecomendacion(String idTipoRecomendacion, String? idParametro,
+      String recomendacion, String? prioridad, String? token) async {
+    final url = Uri.parse("${Enviroments.apiUrl}/recomendacion/create");
+
+    final data = {
+      "idTipoRecomendacion": idTipoRecomendacion,
+      "idParametro": idParametro,
+      "recomendacion": recomendacion,
+      "prioridad": prioridad
+    };
+
+    final resp = await http.post(url,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        },
+        body: jsonEncode(data));
+
+    final recomendacionResponse =
+        recomendacionesGeneralesResponseFromJson(resp.body);
+    recomendaciones = recomendacionResponse.recomendaciones;
+    notifyListeners();
+  }
+
+  actualizarRecomendacion(
+      String id,
+      String idTipoRecomendacion,
+      String? idParametro,
+      String recomendacion,
+      String? prioridad,
+      String? token) async {
+    final url = Uri.parse("${Enviroments.apiUrl}/recomendacion/update/$id");
+
+    final data = {
+      "idTipoRecomendacion": idTipoRecomendacion,
+      "idParametro": idParametro,
+      "recomendacion": recomendacion,
+      "prioridad": prioridad
+    };
+
+    final resp = await http.put(url,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        },
+        body: jsonEncode(data));
+
+    final recomendacionResponse =
+        recomendacionesGeneralesResponseFromJson(resp.body);
+    recomendaciones = recomendacionResponse.recomendaciones;
+    notifyListeners();
+  }
+
+  eliminarRecomendacion(String id, String? token) async {
+    final url = Uri.parse("${Enviroments.apiUrl}/recomendacion/delete/$id");
+
+    final resp = await http.delete(url, headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $token"
+    });
+
+    final recomendacionResponse =
+        recomendacionesGeneralesResponseFromJson(resp.body);
+    recomendaciones = recomendacionResponse.recomendaciones;
+    notifyListeners();
+  }
 }

@@ -21,7 +21,7 @@ class TipoRiesgo {
 
   String id;
   String nombre;
-  List<dynamic> recomendaciones;
+  List<String> recomendaciones;
   int v;
   double rangoMaximo;
   double rangoMinimo;
@@ -30,7 +30,7 @@ class TipoRiesgo {
         id: json["_id"],
         nombre: json["nombre"],
         recomendaciones:
-            List<dynamic>.from(json["recomendaciones"].map((x) => x)),
+            List<String>.from(json["recomendaciones"].map((x) => x)),
         v: json["__v"],
         rangoMaximo: json["rangoMaximo"].toDouble(),
         rangoMinimo: json["rangoMinimo"].toDouble(),
@@ -39,7 +39,7 @@ class TipoRiesgo {
   Map<String, dynamic> toJson() => {
         "_id": id,
         "nombre": nombre,
-        "recomendaciones": List<dynamic>.from(recomendaciones.map((x) => x)),
+        "recomendaciones": List<String>.from(recomendaciones.map((x) => x)),
         "__v": v,
         "rangoMaximo": rangoMaximo,
         "rangoMinimo": rangoMinimo,

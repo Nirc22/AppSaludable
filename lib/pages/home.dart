@@ -96,17 +96,9 @@ class UserUI extends StatelessWidget {
                           Container(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              "${index + 1}. ${usuario.tipoRiesgo!.recomendaciones[index]["recomendacion"]["nombre"]}:",
+                              "${index + 1}. ${usuario.tipoRiesgo!.recomendaciones[index]}.",
                               style: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              usuario.tipoRiesgo!.recomendaciones[index]
-                                  ["recomendacion"]["recomendacion"],
-                              style: const TextStyle(fontSize: 16),
                             ),
                           ),
                           if (index !=
